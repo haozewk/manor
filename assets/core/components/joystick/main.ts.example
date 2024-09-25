@@ -1,0 +1,61 @@
+import joystick from "./joystick";
+
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export default class NewClass extends cc.Component {
+
+    @property({type: cc.Node, displayName: "可点击区域"})
+    touchArea: cc.Node = null;
+
+    @property({type: cc.Node, displayName: "摇杆"})
+    joystick: cc.Node = null;
+
+    @property({type: cc.Node, displayName: "移动物体"})
+    thing: cc.Node = null;
+
+    joystickCom: joystick;
+    moveSpeed = 0.5;
+    moveRotate: number;
+
+    onLoad () {
+        this.joystickCom = this.joystick.getComponent(joystick);
+        this.touchArea.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.touchArea.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.touchArea.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
+    }
+
+    onTouchStart(e: cc.Event.EventTouch) {
+        this.joystickCom.onTouchStart(e);
+    }
+
+    onTouchMove(e: cc.Event.EventTouch) {
+        this.joystickCom.onTouchMove(e);
+    }
+
+    onTouchEnd(e: cc.Event.EventTouch) {
+        this.joystickCom.onTouchEnd(e);
+    }
+
+    thingMove() {
+        let joystickFun = this.joystickCom.returnArrowAngle()
+        this.thing.angle = joystickFun.angle + 90;  // 自行调整
+        if (joystickFun.moveState) {
+            this.thing.setPosition(this.thing.position.add(
+                cc.v3(
+                    joystickFun.vec.x * 5 * joystickFun.speedScale, 
+                    joystickFun.vec.y * 5 * joystickFun.speedScale
+                )
+            ))
+        }
+        cc.log(joystickFun.toString());
+    }
+
+    start () {
+
+    }
+
+    update (dt) {
+        this.thingMove();
+    }
+}
