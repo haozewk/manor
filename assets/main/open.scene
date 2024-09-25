@@ -417,10 +417,7 @@
       "b": 255,
       "a": 255
     },
-    "_spriteFrame": {
-      "__uuid__": "8dc53328-05c6-4d79-a8e7-8b9e149e87f4@f9941",
-      "__expectedType__": "cc.SpriteFrame"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_fillType": 0,
     "_sizeMode": 0,
@@ -496,7 +493,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 140,
+      "width": 112,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -526,7 +523,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "小明历险记",
+    "_string": "木木庄园",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 28,
