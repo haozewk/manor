@@ -1,6 +1,7 @@
 import { _decorator, AssetManager, assetManager, Component, director, Label, Node, ProgressBar, size, UITransform, v3, view } from 'cc';
 const { ccclass, property } = _decorator;
 import {TimeUtil} from '../core/lib/TimeUtil';
+import { LoadFont } from '../scripts/setFont';
 
 @ccclass('page/open')
 export class open extends Component {
@@ -56,7 +57,7 @@ export class open extends Component {
         await this.LoadPackage("scene");  //加载场景包
         this.max = 0.6;
         this.proTip.string  = "正在加载字体资源...";
-        await this.LoadPackage("font");   //加载字体包
+        await LoadFont();   //加载字体包
         this.max = 0.8;
         this.proTip.string  = "正在加载音频资源...";
         await this.LoadPackage("audio"); //加载音频
@@ -73,6 +74,7 @@ export class open extends Component {
             });
         })
     }
+
 
 
 }

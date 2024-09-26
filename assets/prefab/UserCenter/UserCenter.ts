@@ -54,7 +54,7 @@ export class UserCenter extends Component {
         let ratio = vSize.height / dSize.height;
         tw.top = base * ratio;
         this.title.node.setScale(v3(ratio,ratio));
-
+        
 
 
     }
