@@ -44,7 +44,9 @@
       "type": "none"
     },
     "background": {
-      "type": "default"
-    }
+      "type": "custom",
+      "image": "project://settings/BG.jpg"
+    },
+    "totalTime": 500
   }
 }

@@ -5,7 +5,7 @@
  * @description 弹框UI的父类
  * 
  */
-import { _decorator, Component, CCBoolean, Enum, v3, tween, BlockInputEvents, Tween, UIOpacity, Node } from 'cc';
+import { _decorator, Component, CCBoolean, Enum, v3, tween, BlockInputEvents, Tween, UIOpacity, Node, view, UITransform } from 'cc';
 import { PopupManager } from '../manager/PopupManager';
 const { ccclass, property } = _decorator;
 
@@ -76,6 +76,9 @@ export class PopupBase extends Component {
         if (this.blockInput) {
             this.node.addComponent(BlockInputEvents);
         }
+        //设置宽高
+        let vSize = view.getVisibleSize();
+        this.node.getComponent(UITransform).setContentSize(vSize);
     }
 
     _init(name: string, params: Payload = null) {
