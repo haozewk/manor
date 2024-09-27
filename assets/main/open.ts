@@ -49,15 +49,16 @@ export class open extends Component {
         }
     }
     async LoadSubPackages() {
+        this.max = 0.1;
+        this.proTip.string  = "正在加载中...";
+        await LoadFont();   //加载字体包
         this.max = 0.2;
         this.proTip.string = "正在加载游戏资源...";
         await this.LoadPackage("prefab");   //加载预制体
         this.max = 0.4;
         this.proTip.string  = "正在加载场景...";
         await this.LoadPackage("scene");  //加载场景包
-        this.max = 0.6;
-        this.proTip.string  = "正在加载字体资源...";
-        await LoadFont();   //加载字体包
+        
         this.max = 0.8;
         this.proTip.string  = "正在加载音频资源...";
         await this.LoadPackage("audio"); //加载音频
