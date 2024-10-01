@@ -1,7 +1,6 @@
 import { _decorator, AssetManager, assetManager, Component, director, Label, Node, ProgressBar, size, UITransform, v3, view } from 'cc';
 const { ccclass, property } = _decorator;
-import {TimeUtil} from '../core/lib/TimeUtil';
-import { LoadFont } from '../scripts/setFont';
+import {TimeUtil} from '../../core/lib/TimeUtil';
 
 @ccclass('page/open')
 export class open extends Component {
@@ -13,6 +12,9 @@ export class open extends Component {
 
     @property({ type: Label })
     proPecent: Label
+
+    @property({ type: Node })
+    Layout: Node
 
     private max: number = 0;
     private ptxt:string ="";
@@ -51,7 +53,7 @@ export class open extends Component {
     async LoadSubPackages() {
         this.max = 0.1;
         this.proTip.string  = "正在加载中...";
-        await LoadFont();   //加载字体包
+
         this.max = 0.2;
         this.proTip.string = "正在加载游戏资源...";
         await this.LoadPackage("prefab");   //加载预制体
