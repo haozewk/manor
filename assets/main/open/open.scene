@@ -182,7 +182,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 422.3481781376518,
+    "_orthoHeight": 422.77608915906785,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -677,7 +677,7 @@
       "b": 140,
       "a": 255
     },
-    "_string": "木木花琅",
+    "_string": "小小客栈",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 36,
@@ -1369,7 +1369,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -319.8,
+      "y": -318.8,
       "z": 0
     },
     "_lrot": {

@@ -2,6 +2,7 @@ import { _decorator, Component, Node, NodeEventType, Label, sp, v3, assetManager
 import { PopupManager } from '../../core/components/popup/manager/PopupManager';
 import { TimeUtil } from '../../core/lib/TimeUtil';
 import { ResUtil } from '../../core/lib/ResUtil';
+import { AudioManager } from '../../core/components/audio/manager/AudioManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('home')
@@ -19,7 +20,9 @@ export class home extends Component {
     onLoad() {
        this.SetEvent();
        this.StartTime();
-       this.GetRole();
+       this.GetRoles();
+
+       if (!AudioManager.instance.isBgmPlaying()) AudioManager.instance.playBgm({ path: "Battle", bundleName: "audio" });
     }
 
     update(deltaTime: number) {
@@ -46,30 +49,39 @@ export class home extends Component {
     StopTime(){
        this.unschedule(this.GetTime)
     }
+    
+    GetRoles(){
+        this.GetRole('xiaonvhai','roles');
+        setTimeout(() => {
+        this.GetRole('yuanwai','roles');
+            
+        }, 1000);
+        setTimeout(() => {
+            this.GetRole('xiaoshaoye','roles2');
+                
+            }, 3000);
+    }
 
-    GetRole(){
-        ResUtil.loadAsset({path:'nvzhanggui',bundleName:"roles",type:Prefab})
+    GetRole(name,bundle){
+        let child = this.RolesNode.children;
+        ResUtil.loadAsset({path:name,bundleName:bundle,type:Prefab})
         .then((e:Prefab)=>{
             console.log(e)
             let node = instantiate(e);
-            
-          this.RoleNode.addChild(node);
+          
+            for(  let i = 0;i<=child.length;i++){
+                 if(child[i].children.length<=0){
+                     child[i].addChild(node);
+                     break;
+                 }
+            }
         })
         .catch(err=>{
             console.log(err);
         })
 
-        ResUtil.loadAsset({path:'xiaonvhai',bundleName:"roles",type:Prefab})
-        .then((e:Prefab)=>{
-            console.log(e)
-            let node = instantiate(e);
-            node.setScale(v3(-0.7,0.7,1))
-            
-          this.RolesNode.addChild(node);
-        })
-        .catch(err=>{
-            console.log(err);
-        })
+
+ 
            
     }
 }

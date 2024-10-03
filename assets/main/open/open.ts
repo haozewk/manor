@@ -17,6 +17,7 @@ export class open extends Component {
 
     private max: number = 0;
     private ptxt:string ="";
+    ISLOAD = false;
 
     protected onLoad(): void {
           
@@ -26,12 +27,14 @@ export class open extends Component {
 
     protected update(dt: number): void {
         // console.log(dt)
+        if (this.ISLOAD) return;
          if(this.pro.progress<this.max){
             this.pro.progress +=dt;
             if(this.pro.progress>=1)this.pro.progress =1;
             this.proPecent.string = (this.pro.progress/1*100).toFixed(2)+"%"
          }
          if(this.pro.progress>=1){
+            this.ISLOAD = true;
             director.loadScene("home");
          }
     }

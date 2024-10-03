@@ -65,6 +65,7 @@ export module ResUtil {
      */
     export function loadAsset<T extends Asset>(option: { path: string, bundleName?: string, bundle?: AssetManager.Bundle, type: Constructor<T> }) {
         const bundle = getBundle(option.bundleName, option.bundle);
+        // console.log(bundle)
         const asset = bundle.get(option.path, option.type);
         if (null != asset) {
             return Promise.resolve(asset);
