@@ -45,6 +45,8 @@ export module ResUtil {
         });
     }
 
+
+
     function getBundle(bundleName?: string, bundle?: AssetManager.Bundle) {
         if (!bundle) {
             if (null == bundleName || '' === bundleName) {

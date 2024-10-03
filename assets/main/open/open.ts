@@ -1,6 +1,5 @@
 import { _decorator, AssetManager, assetManager, Component, director, Label, Node, ProgressBar, size, UITransform, v3, view } from 'cc';
 const { ccclass, property } = _decorator;
-import {TimeUtil} from '../../core/lib/TimeUtil';
 
 @ccclass('page/open')
 export class open extends Component {
@@ -66,7 +65,7 @@ export class open extends Component {
         this.max = 0.8;
         this.proTip.string  = "正在加载音频资源...";
         await this.LoadPackage("audio"); //加载音频
-        console.log(TimeUtil.calculateShichen())
+        // console.log(TimeUtil.calculateShichen())
         this.proTip.string  = "加载完成请稍后...";
         this.max = 1;
     }
