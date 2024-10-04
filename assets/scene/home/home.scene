@@ -1408,7 +1408,7 @@
     "_layoutType": 3,
     "_cellSize": {
       "__type__": "cc.Size",
-      "width": 130,
+      "width": 110,
       "height": 105
     },
     "_startAxis": 0,

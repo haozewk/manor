@@ -2,6 +2,7 @@
 import { _decorator, CCInteger, Component, ImageAsset, instantiate, Label, Node, Prefab, randomRangeInt, sp, Sprite, SpriteFrame, Texture2D, UITransform, v3, Vec3, view } from 'cc';
 import { ResUtil } from '../core/lib/ResUtil';
 import { NeedFoodItem } from '../prefab/NeedFoodItem/NeedFoodItem';
+import { EventManager } from '../core/components/event/manager/EventManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('roleController')
@@ -21,15 +22,16 @@ export class roleController extends Component {
     _scale = 0.5;
     leavePos: Vec3;
 
-    needFoods = []
+    needFoods:any
 
     @property({ type: CCInteger })
     waitTime = 10;
 
 
     start() {
-        this.waitTime = randomRangeInt(10,20);// 设置随机等待时长
+        this.waitTime = randomRangeInt(10, 20);// 设置随机等待时长
         //设置初始位置
+        let visize = view.getVisibleSize();
         let random = randomRangeInt(0, 2);
         let num = parseInt(this.node.parent.name);
         let ui = this.node.getComponent(UITransform);
@@ -37,7 +39,7 @@ export class roleController extends Component {
         if (random == 0) {
             dir = this.left;
             this._dir = 'left';
-            this.leavePos = v3(dir - num * this.pwidth - ui.width / 2, this.node.worldPosition.y, 0);
+            this.leavePos = v3(this.node.parent.parent.worldPosition.x - (visize.width / 2) - ui.width / 2, this.node.worldPosition.y, 0);
             this.node.setWorldPosition(this.leavePos);
             this.node.setScale(v3(this._scale, this._scale, 1))
 
@@ -45,7 +47,7 @@ export class roleController extends Component {
         if (random == 1) {
             dir = this.right;
             this._dir = 'right';
-            this.leavePos = v3(dir + (5 - num) * this.pwidth + 100 + ui.width / 2, this.node.worldPosition.y, 0);
+            this.leavePos = v3(this.node.parent.parent.worldPosition.x + (visize.width / 2) + ui.width / 2, this.node.worldPosition.y, 0);
             this.node.setWorldPosition(this.leavePos);
             this.node.setScale(v3(-this._scale, this._scale, 1))
         }
@@ -54,6 +56,7 @@ export class roleController extends Component {
         this.RunAni("move2");
         console.log(this.node.worldPosition);
         console.log(this.node.parent.worldPosition);
+
 
     }
     protected onDestroy(): void {
@@ -95,31 +98,33 @@ export class roleController extends Component {
             let pos = this.node.worldPosition;
             if (this._dir == 'left') {
                 if (this.leavePos.x < this.node.worldPosition.x) {
+
                     this.node.setWorldPosition(v3(pos.x - (deltaTime * this.speed), pos.y, pos.z));
                 } else {
-                    this.node.destroy();
+                    this.node.parent.removeChild(this.node);
                 }
             }
             if (this._dir == 'right') {
                 if (this.leavePos.x > this.node.worldPosition.x) {
-                    this.node.setWorldPosition(v3(pos.x - (deltaTime * this.speed), pos.y, pos.z));
+                    this.node.setWorldPosition(v3(pos.x + (deltaTime * this.speed), pos.y, pos.z));
                 } else {
-                    this.node.destroy();
+                    this.node.parent.removeChild(this.node);
                 }
             }
         }
 
-        if(5==this.step){
+        if (5 == this.step) {
             //加钱
-            
+
         }
     }
     SetHappy() {
         this.step = 5;
         this.RunAni("happy1");
-        
+        this.QIPAONODE.active = false;
+
     }
-    SetNeedFoods(arr){
+    SetNeedFoods(arr) {
         this.needFoods = arr;
     }
     RunAni(name = 'idle') {
@@ -139,17 +144,18 @@ export class roleController extends Component {
         console.log(aniEnum)
         let track = spine.setAnimation(0, name, true);
         if (track) {
-           
-          
+
+
             // 注册动画的结束回调
             spine.setCompleteListener((trackEntry) => {
                 let name = trackEntry.animation ? trackEntry.animation.name : '';
                 //发送需求
                 if ('feature' == name && this.step == 3) {
-     
-                    this.needFoods.forEach(y=>{
-                        this.ShowQIPAO(y.name, y.num);
-                    })
+
+                    // this.needFoods.forEach(y => {
+                       
+                    // })
+                    this.ShowQIPAO(this.needFoods.name, this.needFoods.num);
                     this.RunAni("idle");
                     //waittime秒后超时生气离开
                     this.scheduleOnce(() => {
@@ -162,19 +168,23 @@ export class roleController extends Component {
 
                 if ('angry1' == name) {
                     //反转
-                    let _scale = this.node.scale;
-                    this.node.setScale(v3(-_scale.x, _scale.y, 1));
+                    if (this._dir == 'left') {
+                        let _scale = this.node.scale;
+                        this.node.setScale(v3(-_scale.x, _scale.y, 1));
+                    }
 
-                    this.RunAni("idle");
+
+                    this.RunAni("move2");
                     this.step = 4;
                 }
 
                 if ('happy1' == name) {
                     //反转
-                    let _scale = this.node.scale;
-                    this.node.setScale(v3(-_scale.x, _scale.y, 1));
-
-                    this.RunAni("idle");
+                    if (this._dir == 'left') {
+                        let _scale = this.node.scale;
+                        this.node.setScale(v3(-_scale.x, _scale.y, 1));
+                    }
+                    this.RunAni("move2");
                     this.step = 4;
                 }
             })
@@ -192,14 +202,16 @@ export class roleController extends Component {
     ShowQIPAO(name, num) {
         this.QIPAONODE.active = true;
         let layout = this.QIPAONODE.getChildByName('Layout');
-        ResUtil.loadAsset({path:"NeedFoodItem/NeedFoodItemPrefab",bundleName:"prefab",type:Prefab})
-        .then((res:Prefab)=>{
-               let node = instantiate(res);
-               let c = node.getComponent(NeedFoodItem);
-               c.SetNeed(name,num);
-               layout.addChild(node);
-        })
-        .catch(err=>{console.log(err)});
+        console.log(this.node.name,name)
+        ResUtil.loadAsset({ path: "NeedFoodItem/NeedFoodItemPrefab", bundleName: "prefab", type: Prefab })
+            .then((res: Prefab) => {
+                let node = instantiate(res);
+                node.setPosition(v3(0,0,0))
+                let c = node.getComponent(NeedFoodItem);
+                c.SetNeed(name, num);
+                layout.addChild(node);
+            })
+            .catch(err => { console.log(err) });
     }
 }
 

@@ -45,7 +45,7 @@ export class home extends Component {
     dayKey = "gameDay";
     moneyKey = "gameMoney";
 
-    FoodArr:Array<any> = [];
+    FoodArr: Array<any> = [];
 
     onLoad() {
         this.SetEvent();
@@ -53,40 +53,38 @@ export class home extends Component {
         this.StartGame();
 
         if (!AudioManager.instance.isBgmPlaying()) AudioManager.instance.playBgm({ path: "Battle", bundleName: "audio" });
-        EventManager.instance.on('SendFood',(res)=>{
+        EventManager.instance.on('SendFood', (res) => {
             console.log(res)
             let a = 0;
-            this.RolesNode.children.forEach(x=>{
-                if(x.children.length<=0)return;
-                if(a==1)return;
-               let role = x.children[0].getComponent(roleController);
-               role.needFoods.forEach(y=>{
+            this.RolesNode.children.forEach(x => {
+                if (x.children.length <= 0) return;
+                //遍历角色
+                let role = x.children[0].getComponent(roleController);
+                if (role.needFoods.name == res.name) {
+                    let food = this.FOODNODE.children.find(z => z.name == res.name);
+                    if (food) {
+                        //设置食物的数量
+                        let foodc = food.getComponent(Food);
+                        foodc.nowCount--;
+                        foodc.SetNum(foodc.nowCount);
 
-                  if(y.name==res.name){
-                      let food =this.FOODNODE.children.find(z=>z.name==res.name);
-                      if(food){
-                          //设置食物的数量
-                          let foodc = food.getComponent(Food);
-                          foodc.nowCount--;
-                          foodc.SetNum(foodc.nowCount);
-                          a =1;
+                        //设置角色需要的数量
 
-                          //设置角色需要的数量
-
-                          let layout = role.QIPAONODE.getChildByName('Layout');
-                          layout.children.forEach(b=>{
-                              let c = b.getComponent(NeedFoodItem);
-                              if(c._name==y.name){
-                                 c.SetNeed(c._name,c._num-1);
-                                 return;
-                              }
-                          })
-                          return;
-                      }
-                  }
-               })
+                        let layout = role.QIPAONODE.getChildByName('Layout');
+                        layout.children.forEach(b => {
+                            let c = b.getComponent(NeedFoodItem);
+                            if (c._name == res.name) {
+                                c.SetNeed(c._name, c._num - 1);
+                                if(c._num<=0){
+                                    role.SetHappy();
+                                }
+                                return;
+                            }
+                        })
+                        return;
+                    }
+                }
             })
-            this.FOODNODE.children.forEach(x)
         })
     }
 
@@ -111,8 +109,8 @@ export class home extends Component {
         if (this.nowTime >= this.endTime) {
             this.nowTime = this.startTime;
             //新的一天逻辑
-            this.nowDay ++;
-            SqlUtil.set(this.dayKey,this.nowDay);
+            this.nowDay++;
+            SqlUtil.set(this.dayKey, this.nowDay);
 
             console.log('新的一天');
         }
@@ -130,89 +128,90 @@ export class home extends Component {
     StopTime() {
         this.unschedule(this.GetTime)
     }
-    StopGetRoles(){
+    StopGetRoles() {
         this.unschedule(this.GetRole);
     }
     StartGetRoles() {
-        this.schedule(this.GetRole,2);
+        this.schedule(this.GetRole, 2);
     }
 
     GetRole() {
-        let role = ["xiaonvhai","yuanwai","xiaoshaoye"];
-        let random  = randomRangeInt(0,role.length);
+        let role = ["xiaonvhai", "yuanwai", "xiaoshaoye", "guifu"];
+        let random = randomRangeInt(0, role.length);
         let name = role[random];
         let child = this.RolesNode.children;
-        ResUtil.loadAsset({ path: name, bundleName:"roles", type: Prefab })
+        ResUtil.loadAsset({ path: name, bundleName: "roles", type: Prefab })
             .then((e: Prefab) => {
-                console.log(e)
                 let node = instantiate(e);
-                let r = randomRangeInt(1,3);
-                let rands = RandomUtil.randomArr(0,foods.length,r);
-                let arr = [];
-                rands.forEach(y=>{
-                    let name = foods[y];
-                    let num = randomRangeInt(1,4);
-                    arr.push({name,num});
-                })
+                let rands = randomRangeInt(0, this.FoodArr.length);
 
-                node.getComponent(roleController).SetNeedFoods(arr);
+
+                let foodObj = {
+                    name: this.FoodArr[rands],
+                    num: randomRangeInt(1, 4)
+                }
+
+                node.getComponent(roleController).SetNeedFoods(foodObj);
 
                 for (let i = 0; i <= child.length; i++) {
-                    if (child[i].children.length <= 0) {
-                        child[i].addChild(node);
-                        break;
+                    if (child[i] && child[i].children) {
+                        if (child[i].children.length <= 0) {
+                            child[i].addChild(node);
+                            break;
+                        }
                     }
+
                 }
             })
             .catch(err => {
                 console.log(err);
             });
     }
-    GetData(){
-        this.nowDay  = SqlUtil.get(this.dayKey,1);
-        this.money = SqlUtil.get(this.moneyKey,0);
+    GetData() {
+        this.nowDay = SqlUtil.get(this.dayKey, 1);
+        this.money = SqlUtil.get(this.moneyKey, 0);
     }
 
-    StartGame(){
+    StartGame() {
         this.SetFood();
         this.StartGetRoles();
     }
 
-    StopGame(){
-      this.StopGetRoles();
+    StopGame() {
+        this.StopGetRoles();
     }
 
-    PauseGame(){
+    PauseGame() {
 
     }
-    
-    SetFood(){
+
+    SetFood() {
         this.FoodArr = [];
         this.FOODNODE.removeAllChildren();
-        let randoms = RandomUtil.randomArr(0,foods.length,5);
+        let randoms = RandomUtil.randomArr(0, foods.length, 5);
         console.log(randoms);
-        randoms.forEach(x=>{
-              ResUtil.loadAsset({path:'Food/FoodPrefab',bundleName:"prefab",type:Prefab})
-              .then((res:Prefab)=>{
-                let node = instantiate(res);
-                let foodC = node.getComponent(Food);
-                node.name = foods[x];
-                this.FoodArr.push(foods[x]);
-                foodC.Init(randomRangeInt(3,7),randomRangeInt(8,21),this.Tong);
-                
-                this.FOODNODE.addChild(node);
-              })
-              .catch(err=>{
-                console.log(err);
-              })
+        randoms.forEach(x => {
+            ResUtil.loadAsset({ path: 'Food/FoodPrefab', bundleName: "prefab", type: Prefab })
+                .then((res: Prefab) => {
+                    let node = instantiate(res);
+                    let foodC = node.getComponent(Food);
+                    node.name = foods[x];
+                    this.FoodArr.push(foods[x]);
+                    foodC.Init(randomRangeInt(3, 7), randomRangeInt(8, 21), this.Tong);
+
+                    this.FOODNODE.addChild(node);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         })
     }
-    AddMoney(money=0){
+    AddMoney(money = 0) {
         //1000铜币=1元宝
         let nowMoney = this.money + money;
 
         let yuan = parseInt((nowMoney / 1000).toString());
-        let tong =nowMoney  - (yuan * 1000);
+        let tong = nowMoney - (yuan * 1000);
         this.Yuan.string = yuan.toString();
         this.Tong.string = tong.toString();
 
