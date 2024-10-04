@@ -236,6 +236,7 @@ export class home extends Component {
     AddMoney(money = 0,spos,epos) {
         //1000铜币=1元宝
         let nowMoney = this.money + money;
+        this.money = nowMoney;
 
         let yuan = parseInt((nowMoney / 1000).toString());
         let tong = nowMoney - (yuan * 1000);
