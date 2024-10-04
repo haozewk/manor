@@ -2,8 +2,8 @@ import { _decorator, Component, director, ImageAsset, Node, size, sp, Sprite, Sp
 import { ResUtil } from '../../core/lib/ResUtil';
 const { ccclass, property } = _decorator;
 
-@ccclass('prefab/AniFood')
-export class AniFood extends Component {
+@ccclass('prefab/Money')
+export class Money extends Component {
     start() {
         
     }
@@ -13,15 +13,14 @@ export class AniFood extends Component {
     update(deltaTime: number) {
         
     }
-    init(name,spos,epos){
-           this.LoadFood(name);
+    init(spos,epos){
+           this.LoadFood();
            this.spos =spos;
            this.epos = epos;
     }
 
-    LoadFood(name) {
-        console.log(name)
-        ResUtil.loadAsset({ path: 'res/sprites/' + name, bundleName: "scene", type: ImageAsset })
+    LoadFood() {
+        ResUtil.loadAsset({ path: 'res/tongban', bundleName: "scene", type: ImageAsset })
             .then((e: ImageAsset) => {
                 console.log(e)
                 const spriteFrame = new SpriteFrame();
@@ -30,9 +29,10 @@ export class AniFood extends Component {
                 spriteFrame.texture = texture;
                 let sprite = this.node.getComponent(Sprite);
                 sprite.spriteFrame = spriteFrame;
-                this.node.getComponent(UITransform).setContentSize(size(60,60))
-                this.node.setScale(v3(0.3,0.3,0.3))
-                tween(this.node).to(0.2, { worldPosition:this.epos ,scale:v3(1,1,1)}).call(e=>{
+                this.node.getComponent(UITransform).setContentSize(size(60,60));
+                this.node.setScale(v3(0.1,0.1,0.1))
+
+                tween(this.node).to(0.3, { worldPosition:this.epos ,scale:v3(1,1,1)}).call(e=>{
                     this.node.destroy();
                 }).start();
             })

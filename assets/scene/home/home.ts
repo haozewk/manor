@@ -11,6 +11,7 @@ import { roleController } from '../../roles/roleController';
 import { EventManager } from '../../core/components/event/manager/EventManager';
 import { NeedFoodItem } from '../../prefab/NeedFoodItem/NeedFoodItem';
 import { AniFood } from '../../prefab/AniFood/AniFood';
+import { Money } from '../../prefab/Money/Money';
 const { ccclass, property } = _decorator;
 
 @ccclass('home')
@@ -27,8 +28,8 @@ export class home extends Component {
     @property({ type: Node })
     FOODNODE: Node;
 
-    @property({ type: Camera })
-    mainCamera: Camera;
+    @property({ type: Node })
+    Layout: Node;
 
     @property({ type: Node })
     ANIFOODNODE: Node;
@@ -91,7 +92,10 @@ export class home extends Component {
                             c.SetNeed(c._name, c._num - 1);
                             let ps = v3(role.node.worldPosition.x, role.node.worldPosition.y + 150, 0);
                             this.SendFood(c._name, res.pos, ps);
-                            this.AddMoney(foodc.price);
+                            setTimeout(() => {
+                            this.AddMoney(foodc.price,ps,this.Tong.node.worldPosition);
+                                
+                            }, 400);
                             if (c._num <= 0) {//
                                 //给完食物
                                 role.SetHappy();
@@ -229,7 +233,7 @@ export class home extends Component {
                 })
         })
     }
-    AddMoney(money = 0) {
+    AddMoney(money = 0,spos,epos) {
         //1000铜币=1元宝
         let nowMoney = this.money + money;
 
@@ -237,7 +241,7 @@ export class home extends Component {
         let tong = nowMoney - (yuan * 1000);
         this.Yuan.string = yuan.toString();
         this.Tong.string = tong.toString();
-
+         this.SendMoney(spos,epos)
 
     }
 
@@ -250,6 +254,22 @@ export class home extends Component {
                 // node.setPosition(spos);
 
                 this.ANIFOODNODE.addChild(node);
+                node.setWorldPosition(spos);
+              
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+    SendMoney( spos, epos) {
+        ResUtil.loadAsset({ path: 'Money/MoneyPrefab', bundleName: "prefab", type: Prefab })
+            .then((res: Prefab) => {
+                let node = instantiate(res);
+                let foodC = node.getComponent(Money);
+                foodC.init( spos, epos);
+                // node.setPosition(spos);
+
+                this.Layout.addChild(node);
                 node.setWorldPosition(spos);
               
             })

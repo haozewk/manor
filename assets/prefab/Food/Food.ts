@@ -22,6 +22,7 @@ export class Food extends Component {
     nowCount = 0;
     price = 0;
     priceTarget: Node;
+    isStart = false;
 
     start() {
         this.TimeNode.active = false;
@@ -29,6 +30,7 @@ export class Food extends Component {
             if (this.nowCount <= 0) {
                 //制造
                 console.log("制造");
+                if(this.isStart)return;
                 this.StartCreate();
             } else {
                 console.log("卖出");
@@ -49,6 +51,7 @@ export class Food extends Component {
     }
 
     StartCreate() {
+        this.isStart = true;
         this.TimeNode.active = true;
         this.schedule(this.CreateFood, 0.1);
     }
