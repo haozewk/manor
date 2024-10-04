@@ -29,7 +29,7 @@ export class roleController extends Component {
 
 
     start() {
-        this.waitTime = randomRangeInt(10, 20);// 设置随机等待时长
+        this.waitTime = randomRangeInt(20, 30);// 设置随机等待时长
         //设置初始位置
         let visize = view.getVisibleSize();
         let random = randomRangeInt(0, 2);

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, NodeEventType, Label, sp, v3, assetManager, Prefab, instantiate, ImageAsset, SpriteFrame, Texture2D, Sprite, randomRangeInt } from 'cc';
+import { _decorator, Component, Node, NodeEventType, Label, sp, v3, assetManager, Prefab, instantiate, ImageAsset, SpriteFrame, Texture2D, Sprite, randomRangeInt, UITransform, size, Camera } from 'cc';
 import { PopupManager } from '../../core/components/popup/manager/PopupManager';
 import { TimeUtil } from '../../core/lib/TimeUtil';
 import { ResUtil } from '../../core/lib/ResUtil';
@@ -10,6 +10,7 @@ import { Food } from '../../prefab/Food/Food';
 import { roleController } from '../../roles/roleController';
 import { EventManager } from '../../core/components/event/manager/EventManager';
 import { NeedFoodItem } from '../../prefab/NeedFoodItem/NeedFoodItem';
+import { AniFood } from '../../prefab/AniFood/AniFood';
 const { ccclass, property } = _decorator;
 
 @ccclass('home')
@@ -25,6 +26,12 @@ export class home extends Component {
 
     @property({ type: Node })
     FOODNODE: Node;
+
+    @property({ type: Camera })
+    mainCamera: Camera;
+
+    @property({ type: Node })
+    ANIFOODNODE: Node;
 
     @property({ type: Label })
     Yuan: Label;  //元宝
@@ -53,6 +60,7 @@ export class home extends Component {
         this.StartGame();
 
         if (!AudioManager.instance.isBgmPlaying()) AudioManager.instance.playBgm({ path: "Battle", bundleName: "audio" });
+        //监听
         EventManager.instance.on('SendFood', (res) => {
             console.log(res)
             let a = 0;
@@ -60,27 +68,39 @@ export class home extends Component {
                 if (x.children.length <= 0) return;
                 //遍历角色
                 let role = x.children[0].getComponent(roleController);
-                if (role.needFoods.name == res.name) {
+                if (role.needFoods.name == res.name && role.step < 4) {
                     let food = this.FOODNODE.children.find(z => z.name == res.name);
                     if (food) {
                         //设置食物的数量
                         let foodc = food.getComponent(Food);
-                        foodc.nowCount--;
+                        if (foodc.nowCount > 0) {
+                            foodc.nowCount--;
+                        } else {
+                            return;
+                        }
                         foodc.SetNum(foodc.nowCount);
 
                         //设置角色需要的数量
 
                         let layout = role.QIPAONODE.getChildByName('Layout');
-                        layout.children.forEach(b => {
-                            let c = b.getComponent(NeedFoodItem);
-                            if (c._name == res.name) {
-                                c.SetNeed(c._name, c._num - 1);
-                                if(c._num<=0){
-                                    role.SetHappy();
-                                }
-                                return;
+                        let b = layout.children[0]
+                        let c = b.getComponent(NeedFoodItem);
+                        // let h = role.getComponent(sp.Skeleton).skeletonData.skeletonJson.skeleton.height;
+                        // console.log(role.getComponent(sp.Skeleton))
+                        if (c._name == res.name) {
+                            c.SetNeed(c._name, c._num - 1);
+                            let ps = v3(role.node.worldPosition.x, role.node.worldPosition.y + 150, 0);
+                            this.SendFood(c._name, res.pos, ps);
+                            this.AddMoney(foodc.price);
+                            if (c._num <= 0) {//
+                                //给完食物
+                                role.SetHappy();
+
+
+
                             }
-                        })
+                            return;
+                        }
                         return;
                     }
                 }
@@ -125,6 +145,8 @@ export class home extends Component {
         }
         this.nowTime += this.timeSkip;
     }
+
+
     StopTime() {
         this.unschedule(this.GetTime)
     }
@@ -132,7 +154,8 @@ export class home extends Component {
         this.unschedule(this.GetRole);
     }
     StartGetRoles() {
-        this.schedule(this.GetRole, 2);
+        this.GetRole();
+        this.schedule(this.GetRole, 4);
     }
 
     GetRole() {
@@ -216,6 +239,23 @@ export class home extends Component {
         this.Tong.string = tong.toString();
 
 
+    }
+
+    SendFood(name, spos, epos) {
+        ResUtil.loadAsset({ path: 'AniFood/AniFoodPrefab', bundleName: "prefab", type: Prefab })
+            .then((res: Prefab) => {
+                let node = instantiate(res);
+                let foodC = node.getComponent(AniFood);
+                foodC.init(name, spos, epos);
+                // node.setPosition(spos);
+
+                this.ANIFOODNODE.addChild(node);
+                node.setWorldPosition(spos);
+              
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
 

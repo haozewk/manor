@@ -33,7 +33,7 @@ export class Food extends Component {
             } else {
                 console.log("卖出");
                 EventManager.instance.emit("SendFood",{name:this.node.name,pos:this.node.worldPosition})
-
+                
                 //卖出 。。。
             }
 
@@ -60,22 +60,20 @@ export class Food extends Component {
     }
 
     CreateFood() {
+        if(this.nowCount>=this.maxCount)return;
         this.NowTime += 0.1;
         let r = (this.NeedTime - this.NowTime) / this.NeedTime;
         this.progress.fillRange = r;
         if (this.NowTime >= this.NeedTime) {
+            this.NowTime = 0;
             //addCount
             if (this.nowCount < this.maxCount) {
                 this.nowCount++;
                 this.SetNum(this.nowCount);
-            }
-            if (this.nowCount < this.maxCount) {
                 this.progress.fillRange = 1;
-                this.NowTime = 0;
-                return;
             }
 
-            this.StopCreate();
+            // this.StopCreate();
             //...
 
         }
