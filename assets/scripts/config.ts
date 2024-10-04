@@ -4,3 +4,25 @@ const labelColor= "#758151";
 const valueColor="#cb9f62";
 const label2Color="#364868";
 const highlineColor="#FEF4C1";
+
+export const foods = [
+    "kaoyangtui",
+    "mian",
+    "yangroujuan",
+    "xiaolongxia",
+    "xiaolongbao",
+    "xianggu",
+    "xiangchang",
+    "wuhuarou",
+    "tangyuan",
+    "shuijiao",
+    "niuroupian",
+    "mixian",
+    "mapodoufu",
+    "hongshaoyu",
+    "hongjiao",
+    "fengzhua",
+    "fengmi",
+    "dongporou"
+
+]

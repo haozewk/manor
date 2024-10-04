@@ -2,7 +2,7 @@ import { _decorator, Component, Label, Node, NodeEventType, size, UITransform, v
 import { PopupManager } from '../../core/components/popup/manager/PopupManager';
 const { ccclass, property } = _decorator;
 
-@ccclass('prefab/UserCenter')
+@ccclass('prefab/JieSuan')
 export class UserCenter extends Component {
     @property({ type: Node })
     closeBtn: Node;
@@ -50,7 +50,7 @@ export class UserCenter extends Component {
         
         //设置title的位置
         let tw = this.title.node.getComponent(Widget);
-        let base = 5;
+        let base = 148;
         let ratio = vSize.height / dSize.height;
         tw.top = base * ratio;
         this.title.node.setScale(v3(ratio,ratio));
@@ -61,7 +61,7 @@ export class UserCenter extends Component {
 
     SetEvent() {
         this.closeBtn?.on(NodeEventType.TOUCH_END, () => {
-            PopupManager.instance.remove("UserCenterPrefab");
+            PopupManager.instance.remove("JieSuanPrefab");
         }, this)
     }
 }

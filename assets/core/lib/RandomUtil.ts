@@ -36,7 +36,7 @@ export module RandomUtil {
     }
 
 /**
-     * 生成[0, max)的 count 个随机整数
+     * 生成[0, max(不包含))的 count 个随机整数
      * @param max 
      * @returns 
      */

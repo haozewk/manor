@@ -2,12 +2,12 @@
   "ver": "1.1.50",
   "importer": "prefab",
   "imported": true,
-  "uuid": "36e1f8ca-43a5-47b3-b2e5-9902b7464402",
+  "uuid": "c9be7eb9-a205-475f-8d78-4041f97caa24",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "nvzhanggui"
+    "syncNodeName": "NeedFoodItemPrefab"
   }
 }
